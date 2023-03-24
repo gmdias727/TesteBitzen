@@ -15,7 +15,11 @@ namespace TesteBitzen.Repositories
 
         public async Task<List<UserModel>> GetAllUsers()
         {
-            return await _dbContext.Users.ToListAsync();
+            return await _dbContext.Users
+                .Include(x => x.Vehicle)
+                    .ThenInclude(x => x.VehicleCategory)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task<UserModel> GetUserById(int id)

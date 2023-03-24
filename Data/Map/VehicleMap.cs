@@ -11,6 +11,14 @@ namespace TesteBitzen.Data.Map
             builder.HasKey(x => x.VehicleId);
             builder.Property(x => x.VehicleName).IsRequired().HasMaxLength(255);
             builder.Property(x => x.VehicleAssembler).IsRequired().HasMaxLength(255);
+
+            builder.Property(x => x.UserId).IsRequired();
+
+            builder.HasOne(x => x.VehicleCategory)
+                .WithOne(x => x.Vehicle)
+                .HasForeignKey<VehicleCategoryModel>(x => x.VehicleId)
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }

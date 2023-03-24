@@ -15,16 +15,6 @@ namespace TesteBitzen.Data
             modelBuilder.ApplyConfiguration(new VehicleMap());
             modelBuilder.ApplyConfiguration(new VehicleCategoryMap());
 
-            modelBuilder.Entity<UserModel>()
-                .HasOne(v => v.Vehicle)
-                .WithOne(u => u.User)
-                .HasForeignKey<VehicleModel>(v => v.UserId);
-
-            modelBuilder.Entity<VehicleCategoryModel>()
-                .HasOne(v => v.Vehicle)
-                .WithOne(u => u.VehicleCategory)
-                .HasForeignKey<VehicleModel>(v => v.VehicleCategoryId);
-
             base.OnModelCreating(modelBuilder);
         }
 

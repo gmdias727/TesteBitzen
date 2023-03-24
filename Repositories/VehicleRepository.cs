@@ -16,7 +16,9 @@ namespace TesteBitzen.Repositories
 
         public async Task<List<VehicleModel>> GetAllVehicles()
         {
-            return await _dbContext.Vehicles.ToListAsync();
+            return await _dbContext.Vehicles
+                .Include(x => x.VehicleCategory)
+                .ToListAsync();
         }
 
         public async Task<VehicleModel> GetVehicleById(int id)

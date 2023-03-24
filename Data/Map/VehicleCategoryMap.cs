@@ -13,6 +13,8 @@ namespace TesteBitzen.Data.Map
             builder.Property(x => x.VehicleCategory).IsRequired().HasMaxLength(255);
             builder.Property(x => x.VehicleFuelType).IsRequired().HasMaxLength(255);
             builder.Property(x => x.VehicleRentCost).IsRequired();
+
+            //builder.HasOne(x => x.Vehicle).WithOne().HasForeignKey<VehicleModel>(x => x.VehicleCategoryId);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Mysqlx.Crud;
 using System.Reflection.Emit;
 using TesteBitzen.Models;
 
@@ -13,6 +14,9 @@ namespace TesteBitzen.Data.Map
             builder.Property(x => x.UserName).IsRequired().HasMaxLength(255);
             builder.Property(x => x.UserEmail).HasMaxLength(255);
             builder.Property(x => x.UserPhone).HasMaxLength(11);
+
+            builder.Property(x => x.VehicleId).IsRequired(false);
+            builder.HasOne(x => x.Vehicle).WithOne(x => x.User).HasForeignKey<VehicleModel>(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

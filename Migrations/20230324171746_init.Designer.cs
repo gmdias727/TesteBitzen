@@ -12,8 +12,8 @@ using TesteBitzen.Data;
 namespace TesteBitzen.Migrations
 {
     [DbContext(typeof(VehicleRentDbContext))]
-    [Migration("20230324031349_everythingUpToDate")]
-    partial class everythingUpToDate
+    [Migration("20230324171746_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,11 +27,11 @@ namespace TesteBitzen.Migrations
 
             modelBuilder.Entity("TesteBitzen.Models.UserModel", b =>
                 {
-                    b.Property<long>("UserId")
+                    b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("UserId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
 
                     b.Property<string>("UserEmail")
                         .HasMaxLength(255)
@@ -46,9 +46,8 @@ namespace TesteBitzen.Migrations
                         .HasMaxLength(11)
                         .HasColumnType("character varying(11)");
 
-                    b.Property<string>("VehicleId")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                    b.Property<int?>("VehicleId")
+                        .HasColumnType("integer");
 
                     b.HasKey("UserId");
 
@@ -57,11 +56,11 @@ namespace TesteBitzen.Migrations
 
             modelBuilder.Entity("TesteBitzen.Models.VehicleCategoryModel", b =>
                 {
-                    b.Property<long>("VehicleCategoryId")
+                    b.Property<int>("VehicleCategoryId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("VehicleCategoryId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("VehicleCategoryId"));
 
                     b.Property<string>("VehicleCategory")
                         .IsRequired()
@@ -73,32 +72,39 @@ namespace TesteBitzen.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("integer");
+
                     b.Property<double?>("VehicleRentCost")
                         .IsRequired()
                         .HasColumnType("double precision");
 
                     b.HasKey("VehicleCategoryId");
 
+                    b.HasIndex("VehicleId")
+                        .IsUnique();
+
                     b.ToTable("VehicleCategories");
                 });
 
             modelBuilder.Entity("TesteBitzen.Models.VehicleModel", b =>
                 {
-                    b.Property<long>("VehicleId")
+                    b.Property<int>("VehicleId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("VehicleId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("VehicleId"));
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("VehicleAssembler")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<string>("VehicleCategoryForeignId")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                    b.Property<int>("VehicleCategoryId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("VehicleName")
                         .IsRequired()
@@ -107,7 +113,44 @@ namespace TesteBitzen.Migrations
 
                     b.HasKey("VehicleId");
 
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
                     b.ToTable("Vehicles");
+                });
+
+            modelBuilder.Entity("TesteBitzen.Models.VehicleCategoryModel", b =>
+                {
+                    b.HasOne("TesteBitzen.Models.VehicleModel", "Vehicle")
+                        .WithOne("VehicleCategory")
+                        .HasForeignKey("TesteBitzen.Models.VehicleCategoryModel", "VehicleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("TesteBitzen.Models.VehicleModel", b =>
+                {
+                    b.HasOne("TesteBitzen.Models.UserModel", "User")
+                        .WithOne("Vehicle")
+                        .HasForeignKey("TesteBitzen.Models.VehicleModel", "UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TesteBitzen.Models.UserModel", b =>
+                {
+                    b.Navigation("Vehicle")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TesteBitzen.Models.VehicleModel", b =>
+                {
+                    b.Navigation("VehicleCategory")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
