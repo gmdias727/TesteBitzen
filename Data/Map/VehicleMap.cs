@@ -14,11 +14,6 @@ namespace TesteBitzen.Data.Map
 
             builder.Property(x => x.UserId).IsRequired();
 
-            builder.HasOne(x => x.VehicleCategory)
-                .WithOne(x => x.Vehicle)
-                .HasForeignKey<VehicleCategoryModel>(x => x.VehicleId)
-                .OnDelete(DeleteBehavior.Restrict);
-
         }
     }
 }

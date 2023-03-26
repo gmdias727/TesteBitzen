@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
+﻿using Microsoft.AspNetCore.Mvc;
 using TesteBitzen.Models;
-using TesteBitzen.Repositories;
 using TesteBitzen.Repositories.Interfaces;
+using TesteBitzen.ViewModels;
 
 namespace TesteBitzen.Controllers
 {
@@ -33,26 +31,13 @@ namespace TesteBitzen.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<UserModel>> AddUser([FromBody] UserDTO user)
+        public async Task<ActionResult<UserModel>> AddUser([FromBody] CreateUserViewModel user)
         {
             var providedUser = new UserModel
             {
                 UserName = user.UserName,
                 UserEmail = user.UserEmail,
                 UserPhone = user.UserPhone,
-
-                Vehicle = new VehicleModel
-                {
-                    VehicleName = user.Vehicle?.VehicleName,
-                    VehicleAssembler = user.Vehicle?.VehicleAssembler,
-
-                    VehicleCategory = new VehicleCategoryModel
-                    {
-                        VehicleCategory = user.Vehicle?.Category.VehicleCategory,
-                        VehicleFuelType = user.Vehicle?.Category.VehicleFuelType,
-                        VehicleRentCost = user.Vehicle?.Category.VehicleRentCost,
-                    }
-                }
             };
 
             UserModel ProvidedUser = await _userRepository.AddUser(providedUser);
@@ -60,11 +45,21 @@ namespace TesteBitzen.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<UserModel>> UpdateUser([FromBody] UserModel userModel, int id)
+        public async Task<ActionResult<UserModel>> UpdateUser([FromBody] UpdateUserViewModel userModel, int id)
         {
-            userModel.UserId = id;
-            UserModel ProvidedUser = await _userRepository.UpdateUser(userModel, id);
-            return Ok(ProvidedUser);
+            var user = await _userRepository.GetUserById(id);
+
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            user.UserName = userModel.UserName ?? user.UserName;
+            user.UserPhone = userModel.UserPhone ?? user.UserPhone;
+            user.UserEmail = userModel.UserEmail ?? user.UserEmail;
+
+            await _userRepository.UpdateUser(user, id);
+            return Ok(user);
         }
 
         [HttpDelete("{id}")]
@@ -72,30 +67,6 @@ namespace TesteBitzen.Controllers
         {
             bool ProvidedUser= await _userRepository.DeleteUser(userId);
             return Ok(ProvidedUser);
-        }
-    }
-}
-
-public record UserDTO
-{
-    public string? UserName { get; set; }
-    public string? UserEmail { get; set; }
-    public string? UserPhone { get; set; }
-
-    public VehicleDTO? Vehicle { get; set; }
-
-
-    public record VehicleDTO
-    {
-        public string? VehicleName { get; set; }
-        public string? VehicleAssembler { get; set; }
-        public CategoryDTO Category { get; set; }
-
-        public record CategoryDTO
-        {
-            public string? VehicleCategory { get; set; }
-            public string? VehicleFuelType { get; set; }
-            public double? VehicleRentCost { get; set; }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TesteBitzen.Models;
 using TesteBitzen.Repositories.Interfaces;
+using TesteBitzen.ViewModels;
 
 namespace TesteBitzen.Controllers
 {
@@ -31,18 +32,35 @@ namespace TesteBitzen.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<VehicleModel>> AddVehicle([FromBody] VehicleModel vehicleModel)
+        public async Task<ActionResult<VehicleModel>> AddVehicle([FromBody] CreateVehicleViewModel vehicle)
         {
-            VehicleModel ProvidedVehicle = await _vehicleRepository.AddVehicle(vehicleModel);
+            var providedVehicle = new VehicleModel
+            {
+                VehicleName = vehicle.VehicleName,
+                VehicleAssembler = vehicle.VehicleAssembler,
+                User = vehicle.User,
+                VehicleCategory = vehicle.VehicleCategory,
+                Rental = vehicle.Rental,
+            };
+
+            VehicleModel ProvidedVehicle = await _vehicleRepository.AddVehicle(providedVehicle);
             return Ok(ProvidedVehicle);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<VehicleModel>> UpdateVehicle([FromBody] VehicleModel vehicleModel, int id)
+        public async Task<ActionResult<VehicleModel>> UpdateVehicle([FromBody] UpdateVehicleViewModel vehicle, int id)
         {
-            vehicleModel.VehicleId = id;
-            VehicleModel ProvidedVehicle = await _vehicleRepository.UpdateVehicle(vehicleModel, id);
-            return Ok(ProvidedVehicle);
+            var providedVehicle = await _vehicleRepository.GetVehicleById(id);
+
+            if (vehicle == null)
+            {
+                return NotFound("Vehicle not found");
+            }
+
+            providedVehicle.VehicleName = vehicle.VehicleName?? providedVehicle.VehicleName;
+
+            await _vehicleRepository.UpdateVehicle(providedVehicle, id);
+            return Ok(providedVehicle);
         }
 
         [HttpDelete("{id}")]

@@ -10,11 +10,9 @@ namespace TesteBitzen.Data.Map
         public void Configure(EntityTypeBuilder<VehicleCategoryModel> builder)
         {
             builder.HasKey(x => x.VehicleCategoryId);
-            builder.Property(x => x.VehicleCategory).IsRequired().HasMaxLength(255);
-            builder.Property(x => x.VehicleFuelType).IsRequired().HasMaxLength(255);
-            builder.Property(x => x.VehicleRentCost).IsRequired();
-
-            //builder.HasOne(x => x.Vehicle).WithOne().HasForeignKey<VehicleModel>(x => x.VehicleCategoryId);
+            builder.Property(x => x.VehicleCategory).HasMaxLength(255);
+            builder.Property(x => x.VehicleFuelType).HasMaxLength(255);
+            builder.Property(x => x.VehicleRentCost);
         }
     }
 }

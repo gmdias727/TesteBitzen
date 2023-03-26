@@ -9,12 +9,12 @@ using TesteBitzen.Repositories.Interfaces;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<VehicleRentDbContext>(x => x.UseNpgsql("Host=localhost;Port=5432;Database=VehicleRentDB2;User Id=postgres;Password=root"));
+builder.Services.AddDbContext<VehicleRentDbContext>(x => x.UseNpgsql("Host=localhost;Port=5432;Database=VehicleRent;User Id=postgres;Password=root"));
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IVehicleCategoryRepository, VehicleCategoryRepository>();
 builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
-
+builder.Services.AddScoped<IRentalRepository, RentalRepository>(); 
 
 
 builder.Services.AddControllers()

@@ -22,7 +22,7 @@ namespace TesteBitzen.Repositories
                 .ToListAsync();
         }
 
-        public async Task<UserModel> GetUserById(int id)
+        public async Task<UserModel?> GetUserById(int id)
         {
             return await _dbContext.Users.FirstOrDefaultAsync(x => x.UserId == id);
         }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TesteBitzen.Models;
 using TesteBitzen.Repositories.Interfaces;
+using TesteBitzen.ViewModels;
 
 namespace TesteBitzen.Controllers
 {
@@ -30,18 +31,37 @@ namespace TesteBitzen.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<VehicleCategoryModel>> AddVehicleCategory([FromBody] VehicleCategoryModel vehicleCategoryModel)
+        public async Task<ActionResult<VehicleCategoryModel>> AddVehicleCategory([FromBody] CreateVehicleCategoryViewModel vehicleCategory)
         {
-            VehicleCategoryModel providedVehicleCategory = await _vehicleCategoryRepository.AddVehicleCategory(vehicleCategoryModel);
-            return Ok(providedVehicleCategory);
+            var providedVehicleCategory = new VehicleCategoryModel
+            {
+                VehicleCategory = vehicleCategory.VehicleCategory,
+                VehicleFuelType = vehicleCategory.VehicleFuelType,
+                VehicleRentCost = vehicleCategory.VehicleRentCost,
+                Vehicle = vehicleCategory.Vehicle,
+            };
+
+            VehicleCategoryModel VehicleCategory = await _vehicleCategoryRepository.AddVehicleCategory(providedVehicleCategory);
+            return Ok(VehicleCategory);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<VehicleCategoryModel>> UpdateVehicleCategory([FromBody] VehicleCategoryModel vehicleCategoryModel, int id)
+        public async Task<ActionResult<VehicleCategoryModel>> UpdateVehicleCategory([FromBody] UpdateVehicleCategoryViewModel vehicleCategoryModel, int id)
         {
-            vehicleCategoryModel.VehicleCategoryId = id;
-            VehicleCategoryModel providedVehicleCategory = await _vehicleCategoryRepository.UpdateVehicleCategory(vehicleCategoryModel, id);
-            return Ok(providedVehicleCategory);
+            var vehicleCategory = await _vehicleCategoryRepository.GetVehicleCategoryById(id);
+
+            if (vehicleCategory == null)
+            {
+                return NotFound("Vehicle category not found");
+            }
+
+            vehicleCategory.VehicleCategory = vehicleCategoryModel.VehicleCategory ?? vehicleCategory.VehicleCategory;
+            vehicleCategory.VehicleFuelType = vehicleCategoryModel.VehicleFuelType?? vehicleCategory.VehicleFuelType;
+            vehicleCategory.VehicleRentCost = vehicleCategoryModel.VehicleRentCost ?? vehicleCategory.VehicleRentCost;
+            vehicleCategory.Vehicle = vehicleCategoryModel.Vehicle ?? vehicleCategory.Vehicle;
+
+            await _vehicleCategoryRepository.UpdateVehicleCategory(vehicleCategory, id);
+            return Ok(vehicleCategory);
         }
 
         [HttpDelete("{id}")]

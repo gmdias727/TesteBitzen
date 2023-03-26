@@ -16,7 +16,6 @@ namespace TesteBitzen.Data.Map
             builder.Property(x => x.UserPhone).HasMaxLength(11);
 
             builder.Property(x => x.VehicleId).IsRequired(false);
-            builder.HasOne(x => x.Vehicle).WithOne(x => x.User).HasForeignKey<VehicleModel>(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
